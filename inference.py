@@ -14,6 +14,7 @@ parser = argparse.ArgumentParser(description="YOLOv8 Inference")
 parser.add_argument(
     "--image",
     type=str,
+    default="/mnt/cluster/nbl-datasets/idcard-spoof/PAD-IDCARD-2025/bonafide-ijcb2025PAD-IDcard/bonafide/0.png",
     help="Image path",
 )
 parser.add_argument(
@@ -28,9 +29,9 @@ def inference(input_image: str, output_image: str) -> Any:
     """
     Crops the ID card from the input image and saves it to the output path.
     """
-    yolo = ut.YOLO("./yolo11_finetune/train/weights/best.pt")
+    yolo = ut.YOLO("./yolo11_finetune/train/weights/best.pt", task="detect")
     image = Image.open(input_image)
-    results = yolo.predict([image], batch=True, classes=[1], verbose=False)
+    results = yolo.predict([image,image], batch=True, classes=[1], mode="val", device="cuda")
     image = np.array(image)
 
     for result in results:
